@@ -8,3 +8,6 @@ spec:
       image: ubuntu-sleeper
       arge: "10"
 
+# command replaces ENTRYPOINT in Dockerfile
+# args replaces CMD in Dockerfile
+

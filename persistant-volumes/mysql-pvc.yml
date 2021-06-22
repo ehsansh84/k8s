@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
- name: nfs-claim1
-spec: 
+  name: mysql-pvc
+spec:
   storageClassName: nfs-storageclass
   accessModes:
-    - ReadWriteOnce 
+    - ReadWriteMany
   resources:
     requests:
-      storage: 1Gi 
+      storage: 1Gi

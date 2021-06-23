@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
+  labels:
+    app: mysql
+    type: back-end
 spec:
   selector:
     matchLabels:
@@ -16,10 +19,9 @@ spec:
       containers:
       - image: mysql:5.6
         name: mysql
-        env:
-          # Use secret in real usage
-        - name: MYSQL_ROOT_PASSWORD
-          value: password
+        envFrom:
+          - secretRef:
+              name: mysql-secret
         ports:
         - containerPort: 3306
           name: mysql

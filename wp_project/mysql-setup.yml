@@ -2,12 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mysql-service
+  namespace: dbs
 spec:
-  type: NodePort
+  #type: ClusterIP
   ports:
     - targetPort: 3306
       port: 3306
-      nodePort: 30011
+      #nodePort: 30011
       name: mysql
   selector:
     app: mysql
@@ -36,6 +37,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pvc
+  namespace: dbs
 spec:
   storageClassName: nfs-storageclass
   accessModes:
@@ -48,6 +50,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
+  namespace: dbs
   labels:
     app: mysql
     type: back-end
@@ -78,4 +81,13 @@ spec:
       - name: mysql-pv
         persistentVolumeClaim:
           claimName: mysql-pvc
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+  namespace: dbs
+data:
+  #DB_USER: cm9vdA==
+  MYSQL_ROOT_PASSWORD: cGFzc3dvcmQ=
 

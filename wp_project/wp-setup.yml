@@ -1,36 +1,3 @@
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  name: wp-pv
-  labels:
-    type: local
-    name: apparsfiles  
-spec:
-  capacity:
-    storage: 5Gi 
-  volumeMode: Filesystem  
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs-storageclass
-  nfs: 
-    path: /nfs/public/wp
-    server: nfs.akks.ir
-    readOnly: false
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: wp-pvc
-  namespace: webs
-spec:
-  storageClassName: nfs-storageclass
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Gi
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -55,6 +22,8 @@ spec:
       - image: wordpress:4.8-apache
         name: wordpress
         env:
+        - name: PHP_INI_SCAN_DIR
+          value: :/usr/local/etc/php/conf.custom
         - name: WORDPRESS_DB_HOST
           value: mysql-service.dbs.svc.cluster.local
         - name: WORDPRESS_DB_PASSWORD
@@ -68,42 +37,12 @@ spec:
         volumeMounts:
         - name: wp-pv
           mountPath: /var/www/html
+        - name: php-config
+          mountPath: /usr/local/etc/php/conf.custom          
       volumes:
       - name: wp-pv
         persistentVolumeClaim:
           claimName: wp-pvc
----          
-apiVersion: v1
-kind: Service
-metadata:
-  name: wp-service
-  namespace: webs
-spec:
-  type: NodePort
-  ports:
-    - targetPort: 80
-      port: 80
-      nodePort: 30012
-      name: wp
-  selector:
-    app: wordpress
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: wp-secret
-  namespace: webs
-data:
-  DB_USER: cm9vdA==
-  DB_PASSWORD: cGFzc3dvcmQ=
----
-apiVersion: v1 #  for k8s versions before 1.9.0 use apps/v1beta2  and before 1.8.0 use extensions/v1beta1
-kind: ConfigMap
-metadata:
-  name: wp-config
-  namespace: webs
-data:
-  WP_DB_HOST: mysql
-  WP_DB_USER: mysql
-  WP_DB_PASSWORD: mysql
-
+      - name: php-config
+        configMap:
+          name: wp-config

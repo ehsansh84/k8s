@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-simple-web-app1
+spec:
+  rules:
+  - host: web1.doomain.ir
+    http:
+      paths:
+      - backend:
+          serviceName: simple-web-app1-service
+          servicePort: 80
+

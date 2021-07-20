@@ -14,8 +14,17 @@ spec:
       containers:
       - name: nginx
         image: nginx:1.7.1
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-www
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: nginx-www
+        persistentVolumeClaim:
+          claimName: nginx-pvc
   replicas: 3
   selector:
     matchLabels:
-      type: nginx
+      app: nginx
 

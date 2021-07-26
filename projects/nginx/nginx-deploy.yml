@@ -28,7 +28,7 @@ spec:
           #      - name: nginx-conf
           #        persistentVolumeClaim:
           #          claimName: nginx-pvc
-  replicas: 3
+  replicas: 1 
   selector:
     matchLabels:
       app: nginx
